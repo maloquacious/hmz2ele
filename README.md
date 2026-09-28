@@ -76,6 +76,16 @@ Not every column and row within `columns` × `rows` is in the grid: in the last 
 The preview fills each hex with the color of its center elevation, using a hypsometric ramp with more color stops at low elevations, and darkens hex outlines.
 No-data hexes are dark blue, hexes at or below 0 m are teal, and areas outside the grid are white.
 
+## Package
+
+The `hmz2ele` package holds the grid geometry that other pipeline tools share, so they always agree with the sampled elevations:
+
+- `NewGrid`, `Grid.Center`, `Grid.West`, `Grid.East`, `Grid.Contains`, and `Neighbor` lay out the grid.
+- `Grid.HexAt` and `Grid.NearestVertex` map a raster point to a hex and to the nearest vertex.
+- `CornerOwner`, `VertexHexes`, and `VertexNeighbors` walk the vertex graph; each vertex has three neighbors along hex edges.
+- `EdgeBetween` and `EdgeVertices` convert between pairs of vertices and edges, identified by the hex that owns them (`n`, `ne`, or `se`).
+- `RenderPreview` draws the preview image so callers can draw over it; `WritePreview` encodes it as PNG.
+
 ## License
 
 MIT. See `LICENSE`.

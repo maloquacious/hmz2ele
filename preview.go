@@ -9,8 +9,6 @@ import (
 	"image/png"
 	"io"
 	"math"
-
-	"github.com/maloquacious/hexg"
 )
 
 var (
@@ -38,8 +36,19 @@ var landRamp = []struct {
 // its center elevation and hex outlines drawn darker. Each preview pixel
 // covers scale × scale raster pixels.
 func WritePreview(w io.Writer, g Grid, hexes []Hex, scale int) error {
+	img, err := RenderPreview(g, hexes, scale)
+	if err != nil {
+		return err
+	}
+	return png.Encode(w, img)
+}
+
+// RenderPreview draws the preview that WritePreview writes, so callers can
+// draw over it. Preview pixel (px, py) covers raster pixels
+// [px × scale, (px+1) × scale) × [py × scale, (py+1) × scale).
+func RenderPreview(g Grid, hexes []Hex, scale int) (*image.RGBA, error) {
 	if scale < 1 {
-		return fmt.Errorf("preview scale %d: must be at least 1", scale)
+		return nil, fmt.Errorf("preview scale %d: must be at least 1", scale)
 	}
 	index := make([]int, g.Columns*g.Rows)
 	for i := range index {
@@ -49,9 +58,8 @@ func WritePreview(w io.Writer, g Grid, hexes []Hex, scale int) error {
 		index[h.Row*g.Columns+h.Col] = i
 	}
 
-	layout := previewLayout(g)
 	hexAt := func(px, py int) int {
-		col, row := pointToHex(layout, (float64(px)+0.5)*float64(scale), (float64(py)+0.5)*float64(scale))
+		col, row := g.HexAt((float64(px)+0.5)*float64(scale), (float64(py)+0.5)*float64(scale))
 		if col < 0 || row < 0 || col >= g.Columns || row >= g.Rows {
 			return -1
 		}
@@ -82,22 +90,7 @@ func WritePreview(w io.Writer, g Grid, hexes []Hex, scale int) error {
 			img.SetRGBA(px, py, c)
 		}
 	}
-	return png.Encode(w, img)
-}
-
-// previewLayout returns a hexg layout that matches the grid: hexg's even-q
-// layout shifts even columns down, and hex (0, 0) is centered where
-// Grid.Center puts it.
-func previewLayout(g Grid) hexg.Layout {
-	x0, y0 := g.Center(0, 0)
-	return hexg.NewLayout(hexg.EvenQ, hexg.Point{X: g.Side, Y: g.Side}, hexg.Point{X: x0, Y: y0})
-}
-
-// pointToHex returns the column and row of the hex containing the point.
-// The hex may be outside the grid.
-func pointToHex(l hexg.Layout, x, y float64) (col, row int) {
-	oc := l.CubeToOffset(l.PixelToHexRounded(hexg.Point{X: x, Y: y}))
-	return oc.Col, oc.Row
+	return img, nil
 }
 
 func elevationColor(e *int16) color.RGBA {

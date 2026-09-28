@@ -83,10 +83,9 @@ func TestPreviewMapsCentersToTheirHex(t *testing.T) {
 		t.Fatal(err)
 	}
 	// The preview's pixel-to-hex mapping must agree with Grid.Center.
-	layout := previewLayout(g)
 	for _, h := range hexes {
 		x, y := g.Center(h.Col, h.Row)
-		col, row := pointToHex(layout, x, y)
+		col, row := g.HexAt(x, y)
 		if col != h.Col || row != h.Row {
 			t.Errorf("center of (%d, %d) maps to (%d, %d)", h.Col, h.Row, col, row)
 		}
