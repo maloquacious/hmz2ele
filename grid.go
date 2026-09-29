@@ -168,6 +168,19 @@ func (c Corner) MarshalText() ([]byte, error) {
 	return []byte(c.String()), nil
 }
 
+// UnmarshalText decodes "west" or "east" into the corner.
+func (c *Corner) UnmarshalText(text []byte) error {
+	switch string(text) {
+	case "west":
+		*c = WestCorner
+	case "east":
+		*c = EastCorner
+	default:
+		return fmt.Errorf("invalid corner %q", text)
+	}
+	return nil
+}
+
 // VertexKey identifies a vertex by the hex that owns it and which of that
 // hex's two owned corners it is.
 type VertexKey struct {

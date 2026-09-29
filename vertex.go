@@ -109,6 +109,21 @@ func (s Side) MarshalText() ([]byte, error) {
 	return []byte(s.String()), nil
 }
 
+// UnmarshalText decodes "n", "ne", or "se" into the side.
+func (s *Side) UnmarshalText(text []byte) error {
+	switch string(text) {
+	case "n":
+		*s = NorthSide
+	case "ne":
+		*s = NorthEastSide
+	case "se":
+		*s = SouthEastSide
+	default:
+		return fmt.Errorf("invalid side %q", text)
+	}
+	return nil
+}
+
 // EdgeKey identifies an edge by the hex that owns it and which of that hex's
 // three owned sides it is.
 type EdgeKey struct {
