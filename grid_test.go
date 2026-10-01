@@ -21,11 +21,11 @@ func TestCenterMatchesReadmeFormula(t *testing.T) {
 		col, row int
 		x, y     float64
 	}{
-		{0, 0, s, 98},
-		{1, 0, 2.5 * s, 49},
-		{2, 0, 4 * s, 98},
-		{1, 3, 2.5 * s, 49 + 6*49},
-		{-1, 0, -0.5 * s, 49},
+		{0, 0, s, 49},
+		{1, 0, 2.5 * s, 98},
+		{2, 0, 4 * s, 49},
+		{1, 3, 2.5 * s, 98 + 6*49},
+		{-1, 0, -0.5 * s, 98},
 	} {
 		x, y := g.Center(tc.col, tc.row)
 		if !near(x, tc.x) || !near(y, tc.y) {

@@ -20,21 +20,21 @@ The command prints a summary: grid size, hex count, and the number of land, low,
 
 ## Grid
 
-Hexes are flat-top, with even columns shifted down by half a hex.
+Hexes are flat-top, with odd columns shifted down by half a hex, so column 0 sits up. This is Worldographer's `COLUMNS` layout.
 Geometry uses continuous raster coordinates: pixel `(i, j)` covers `[i, i+1) × [j, j+1)`.
 For apothem `a` and side `s = 2a / sqrt(3)`, the center of the hex in column `c` and row `r` is:
 
 ```text
 x = s + 1.5 × s × c
-y = a + 2a × r + (a if c is even, else 0)
+y = a + 2a × r + (a if c is odd, else 0)
 ```
 
 The first column's west corner is at `x = 0`.
 
 Columns and rows are numbered from 0.
 A hex is in the grid if its column and row are both at least 0 and its center pixel, `(floor(x), floor(y))`, is inside the raster.
-(Without the first condition, the even-column hexes of row −1, whose centers are at `y = 0`, would count too.)
-`columns` counts the columns whose center x satisfies `floor(x) < width`, and `rows` the rows whose center y in column 1 (column 0 if there is only one) satisfies `floor(y) < height`; odd columns sit higher, so they hold the most rows.
+(Without the first condition, the odd-column hexes of row −1, whose centers are at `y = 0`, would count too.)
+`columns` counts the columns whose center x satisfies `floor(x) < width`, and `rows` the rows whose center y in column 0 satisfies `floor(y) < height`; even columns sit higher, so they hold the most rows.
 
 The six corners are at these exact offsets from the center, clockwise from east (y down):
 
@@ -63,12 +63,12 @@ Elevations are `int16` meters; `null` means no-data.
 
 ```json
 {
-  "hmz2ele_version": "0.3.0",
+  "hmz2ele_version": "0.4.0",
   "heightmap": { "file_name": "pandemokh.hmz", "metadata": { ... } },
   "grid": { "apothem_px": 48, "side_px": 55.43, "columns": 106, "rows": 222, "hex_count": 23479, ... },
   "sampling": { "window": 3, "statistic": "...", "no_data_majority": 5 },
-  "hexes": [ { "col": 18, "row": 47, "center": 81, "west": 148, "east": null }, ... ],
-  "boundary_vertices": [ { "col": 0, "row": -1, "corner": "east", "elevation": null }, ... ]
+  "hexes": [ { "col": 49, "row": 0, "center": 398, "west": 505, "east": null }, ... ],
+  "boundary_vertices": [ { "col": -1, "row": -1, "corner": "east", "elevation": null }, ... ]
 }
 ```
 
@@ -88,7 +88,7 @@ Corners used by hexes in the grid but owned by hexes outside it are listed in `b
 They are ordered by owner row, owner column, then corner (`west` before `east`).
 
 Hexes are ordered by row, then column.
-Not every column and row within `columns` × `rows` is in the grid: in the last row, even columns may fall outside the raster.
+Not every column and row within `columns` × `rows` is in the grid: in the last row, odd columns may fall outside the raster.
 
 ## Preview
 

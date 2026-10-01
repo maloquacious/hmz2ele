@@ -7,7 +7,7 @@ import (
 	"math"
 )
 
-// Grid is a flat-top hex grid laid over a raster, with even columns shifted
+// Grid is a flat-top hex grid laid over a raster, with odd columns shifted
 // down by half a hex. Hex (0, 0) is in the top-left corner and the first
 // column's west corner is at x = 0.
 //
@@ -53,10 +53,10 @@ func NewGrid(apothem, width, height int) (Grid, error) {
 	if g.Columns == 0 {
 		return Grid{}, fmt.Errorf("raster %d × %d: too narrow for apothem %d", width, height, apothem)
 	}
-	// Odd columns sit higher than even columns, so they hold the most rows.
-	rowsCol := min(1, g.Columns-1)
+	// Even columns sit higher than odd columns, so column 0 holds the most
+	// rows.
 	for {
-		_, y := g.Center(rowsCol, g.Rows)
+		_, y := g.Center(0, g.Rows)
 		if int(math.Floor(y)) >= height {
 			break
 		}
@@ -74,7 +74,7 @@ func (g Grid) Center(col, row int) (x, y float64) {
 	a := g.Apothem
 	x = g.Side + 1.5*g.Side*float64(col)
 	yi := a + 2*a*row
-	if isEven(col) {
+	if !isEven(col) {
 		yi += a
 	}
 	return x, float64(yi)
@@ -120,7 +120,7 @@ var Directions = [6]Direction{North, NorthEast, SouthEast, South, SouthWest, Nor
 // Neighbor returns the column and row of the hex next to (col, row) in the
 // given direction. The result may be outside the grid.
 func Neighbor(col, row int, d Direction) (int, int) {
-	even := isEven(col)
+	odd := !isEven(col)
 	switch d {
 	case North:
 		return col, row - 1
@@ -131,7 +131,7 @@ func Neighbor(col, row int, d Direction) (int, int) {
 		if d == NorthWest {
 			dc = -1
 		}
-		if even {
+		if odd {
 			return col + dc, row
 		}
 		return col + dc, row - 1
@@ -140,7 +140,7 @@ func Neighbor(col, row int, d Direction) (int, int) {
 		if d == SouthWest {
 			dc = -1
 		}
-		if even {
+		if odd {
 			return col + dc, row + 1
 		}
 		return col + dc, row

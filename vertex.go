@@ -12,10 +12,10 @@ import (
 // HexAt returns the column and row of the hex containing the point. The hex
 // may be outside the grid.
 func (g Grid) HexAt(x, y float64) (col, row int) {
-	// hexg's even-q layout shifts even columns down, matching the grid, once
+	// hexg's odd-q layout shifts odd columns down, matching the grid, once
 	// hex (0, 0) is centered where Center puts it.
 	x0, y0 := g.Center(0, 0)
-	l := hexg.NewLayout(hexg.EvenQ, hexg.Point{X: g.Side, Y: g.Side}, hexg.Point{X: x0, Y: y0})
+	l := hexg.NewLayout(hexg.OddQ, hexg.Point{X: g.Side, Y: g.Side}, hexg.Point{X: x0, Y: y0})
 	oc := l.CubeToOffset(l.PixelToHexRounded(hexg.Point{X: x, Y: y}))
 	return oc.Col, oc.Row
 }

@@ -131,7 +131,7 @@ func NewElevations(fileName string, hm *dem2hm.HeightMap16, g Grid) *Elevations 
 		Hmz2eleVersion: Version().String(),
 		Heightmap:      HeightmapInfo{FileName: fileName, Metadata: hm.Metadata},
 		Grid: GridInfo{
-			Layout:     "flat-top, even columns shifted down; center x = s + 1.5·s·col, y = a + 2a·row (+ a if col is even)",
+			Layout:     "flat-top, odd columns shifted down; center x = s + 1.5·s·col, y = a + 2a·row (+ a if col is odd)",
 			ApothemPx:  g.Apothem,
 			SidePx:     g.Side,
 			Columns:    g.Columns,
